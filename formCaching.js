@@ -13,7 +13,6 @@
 
 		debounce = setTimeout(function(){
 			localStorage.setItem(namespace+id, JSON.stringify(formData[id]));
-			console.log(formData[id]);
 		}, 300);
 	}
 
@@ -30,7 +29,7 @@
 		[].forEach.call(form.elements, function(element){
 			if (blacklist.indexOf(element.type) < 0) {
 				element.onchange = persistForm;
-				
+
 				if (element.type === "radio") {
 					if (element.value === formData[form.id][element.name])
 						element.checked = true;
