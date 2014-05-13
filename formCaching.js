@@ -1,22 +1,39 @@
-(function(){
-	var formData = localStorage.getItem('formData') || "{}",
-		debounce;
+(function(namespace){
+	var formData = {},
+		blacklist = ['button', 'submit', 'reset'],
+		debounce,
+		id;
 
-	if (formData) formData = JSON.parse(formData);
+	namespace += '-';
 
 	function persistForm (e) {
 		clearTimeout(debounce);
-		formData[this.name] = this.value;
+		id = this.form.id;
+		formData[id][this.name] = this.value;
 
 		debounce = setTimeout(function(){
-			localStorage.setItem('formData', JSON.stringify(formData));
+			localStorage.setItem(namespace+id, JSON.stringify(formData[id]));
 		}, 200);
 	}
 
-	[].forEach.call(document.forms['test-one'].elements, function(element){
-		element.onkeyup = persistForm;
+	function clearForm (e) {
+		formData[this.id] = {};
+		localStorage.removeItem(namespace+this.id);
+	}
 
-		if (formData[element.name])
-			element.value = formData[element.name];
+	[].forEach.call(document.forms, function (form) {
+		formData[form.id] = JSON.parse(localStorage.getItem(namespace+form.id) || "{}");
+
+		form.onsubmit = clearForm;
+		form.onreset = clearForm;
+
+		[].forEach.call(form.elements, function(element){
+			if (blacklist.indexOf(element.type) < 0) {
+				element.onkeyup = persistForm;
+
+				if (formData[form.id][element.name])
+					element.value = formData[form.id][element.name];
+			}
+		});
 	});
-})();
+})('formData');
