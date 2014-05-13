@@ -24,8 +24,7 @@
 	[].forEach.call(document.forms, function (form) {
 		formData[form.id] = JSON.parse(localStorage.getItem(namespace+form.id) || "{}");
 
-		form.onsubmit = clearForm;
-		form.onreset = clearForm;
+		form.onreset = form.onsubmit = clearForm;
 
 		[].forEach.call(form.elements, function(element){
 			if (blacklist.indexOf(element.type) < 0) {
