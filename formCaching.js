@@ -13,7 +13,8 @@
 
 		debounce = setTimeout(function(){
 			localStorage.setItem(namespace+id, JSON.stringify(formData[id]));
-		}, 200);
+			console.log(formData[id]);
+		}, 300);
 	}
 
 	function clearForm (e) {
@@ -28,10 +29,16 @@
 
 		[].forEach.call(form.elements, function(element){
 			if (blacklist.indexOf(element.type) < 0) {
-				element.onkeyup = persistForm;
-
-				if (formData[form.id][element.name])
-					element.value = formData[form.id][element.name];
+				element.onchange = persistForm;
+				
+				if (element.type === "radio") {
+					if (element.value === formData[form.id][element.name])
+						element.checked = true;
+				} else {
+					element.onkeyup = persistForm;
+					if (formData[form.id][element.name])
+						element.value = formData[form.id][element.name];
+				}
 			}
 		});
 	});
